@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/User';
+import User from '../models/User.js';
 
 const authMiddleware = async (req, res, next) => {
     try {
@@ -9,7 +9,7 @@ const authMiddleware = async (req, res, next) => {
             return res.status(401).json({ message: "No token provided" })
 
         const decoded = jwt.verify(
-            token.replace("Bearer", ""),
+            token.replace("Bearer ", ""),
             process.env.JWT_SECRET
         )
 
