@@ -47,7 +47,7 @@ const login = async (req, res) => {
             return res.status(400).json({ message: "All fields are Required" });
         }
 
-        const user = await user.findOne({ email })
+        const user = await User.findOne({ email })
 
         if(!user)
             return res.status(401).json({ message: "Invalid email or password" })
@@ -70,4 +70,4 @@ const login = async (req, res) => {
     }
 }
 
-export default register;
+export  {register, login};
