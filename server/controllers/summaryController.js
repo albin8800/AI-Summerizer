@@ -1,41 +1,48 @@
 import Summary from "../models/Summary.js";
+import generateSummary from '../utils/aiSummarizer.js'
 
-const createSummary = async (req, res) => {
-    try {
-        const { originalText } = req.body;
+ const createSummary = async (req, res) => {
+  try {
+    const { originalText, tone } = req.body;
 
-        if(!originalText)
-            return res.status(400).json({ message: "Original text is Required" });
+    if (!originalText)
+      return res.status(400).json({ message: "Original text is required" });
 
-    const summary = "AI summary will be added later";
+    const selectedTone = tone || "neutral"; 
 
+   
+    const summaryText = await generateSummary(originalText, selectedTone);
+
+    
     const newSummary = await Summary.create({
       user: req.user.id,
       originalText,
-      summaryText: summary
+      summaryText
     });
 
     res.status(201).json({
-      message: "Summary created successfully",
+      message: "Summary generated",
       data: newSummary
     });
 
-    } catch (error) {
-         res.status(500).json({ message: "Server Error" });
-    }
-}
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "AI Summarization failed" });
+  }
+};
 
 const getSummaries = async (req, res) => {
-    try {
-        const summaries = await Summary.find({ user: req.user._id })
-        .sort({ createdAt: -1 })
+  try {
+    const summaries = await Summary.find({ user: req.user.id })
+      .sort({ createdAt: -1 });
 
-        res.json({
-            data: summaries
-        })
-    } catch (error) {
-         res.status(500).json({ message: "Server Error" });
-    }
-}
+    res.json({
+      data: summaries
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
 
-export { createSummary, getSummaries }
+
+export { createSummary, getSummaries };
