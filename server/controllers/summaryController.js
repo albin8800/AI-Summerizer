@@ -44,5 +44,31 @@ const getSummaries = async (req, res) => {
   }
 };
 
+const deleteSummary = async (req, res) => {
+  try {
+    const summaryId = req.params.id;
 
-export { createSummary, getSummaries };
+    
+    const summary = await Summary.findById(summaryId);
+
+    if (!summary)
+      return res.status(404).json({ message: "Summary not found" });
+
+    
+    if (summary.user.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    await Summary.findByIdAndDelete(summaryId);
+
+    res.json({ message: "Summary deleted successfully" });
+
+  } catch (error) {
+    console.error("Delete Error:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+
+
+export { createSummary, getSummaries, deleteSummary };
